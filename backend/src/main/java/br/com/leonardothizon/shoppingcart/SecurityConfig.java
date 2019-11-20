@@ -18,25 +18,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-//		http.csrf().disable()
-//         .authorizeRequests().anyRequest().authenticated()
-//				.authorizeRequests().antMatchers("**/checkout/**").hasRole("ADMIN").and().httpBasic();
 		http.authorizeRequests().anyRequest().authenticated().and().httpBasic().and().csrf().disable().cors();
-
-//		http.authorizeRequests()
-//        .anyRequest().authenticated()
-//        .and()
-//        .httpBasic()
-//        .and()
-//        .csrf().disable();
 	}
 
 	@Autowired
 	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
 		auth.userDetailsService(detailsService).passwordEncoder(CustomerEntity.PASSWORD_ENCODER);
-//        auth.inMemoryAuthentication()
-//            .withUser("admin")
-//            .password("{noop}password")
-//            .roles("USER");
 	}
 }
