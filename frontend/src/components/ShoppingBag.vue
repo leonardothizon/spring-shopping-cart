@@ -1,23 +1,5 @@
 <template>
   <div id="shopping-bag-page">
-    <div class="page-header">
-      <div class="header-content">
-        <img class="logo" src="/logo.png" />
-        <nav>
-          <a href>INÍCIO</a>
-          <a href>PRODUTOS</a>
-        </nav>
-      </div>
-      <div class="header-content">
-        <nav>
-          <a>Olá, Leonardo</a>
-          <a>
-            <img src="shopping-bag-128.png" width="32" />
-            {{ bagItems.length }}
-          </a>
-        </nav>
-      </div>
-    </div>
     <div class="page-body">
       <h2>Sacola de compras: {{ bagItems.length }} itens</h2>
       <table>
@@ -29,7 +11,12 @@
           <th>Total</th>
           <th></th>
         </tr>
-        <ShoppingBagItem v-for="item in bagItems" :key="item.id" :item="item"></ShoppingBagItem>
+        <ShoppingBagItem
+          v-for="item in bagItems"
+          :key="item.id"
+          :item="item"
+          @removeItem="removeItem(item)"
+        ></ShoppingBagItem>
       </table>
       <div class="order-observations">
         <label>Observação da compra</label>
@@ -40,9 +27,6 @@
         <p>R$ {{ orderTotal }}</p>
       </div>
       <button class="finalize-order" @click="finalizeOrder">Finalizar pedido</button>
-    </div>
-    <div class="page-footer">
-      <p>Bella Face Loja de Cosméticos FAKE</p>
     </div>
   </div>
 </template>
@@ -58,7 +42,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["bagItems"]),
+    ...mapGetters(["bagItems", "getToken"]),
     orderTotal: function() {
       let total = 0;
       for (let item of this.bagItems) {
@@ -68,7 +52,11 @@ export default {
     }
   },
   methods: {
+    removeItem: function(item) {
+      this.$store.dispatch("removeFromCart", item.id);
+    },
     finalizeOrder: function() {
+      if (!confirm('Deseja finalizar o pedido?')) return;
       let items = [];
       for (let item of this.bagItems) {
         let orderItem = {
@@ -83,13 +71,16 @@ export default {
         customer: { id: 1 },
         items: items
       };
-      const AuthStr = "Basic bGVvbmFyZG86bGVvbmFyZG8=";
+      const AuthStr = this.getToken;
       this.$http
         .post("http://localhost:9000/api/v1/orders", order, {
           headers: { Authorization: AuthStr }
         })
-        .then(() => {
-          alert("Pedido enviado!");
+        .then((r) => {
+          let pedidoId = r.data.id;
+          alert("Pedido " + pedidoId +" gerado!");
+          this.$store.dispatch("cleanShoppingBag");
+          this.$router.push('home');
         });
     }
   }
@@ -101,31 +92,31 @@ $colorPrimary: #ff6c00;
 $colorSecondary: #ff9140;
 $colorContrast: #fff;
 
-.page-header {
-  width: 100%;
-  height: 100px;
-  background-color: $colorPrimary;
-  display: flex;
-  justify-content: space-between;
-  padding: 0 10px;
+// .page-header {
+//   width: 100%;
+//   height: 100px;
+//   background-color: $colorPrimary;
+//   display: flex;
+//   justify-content: space-between;
+//   padding: 0 10px;
 
-  .header-content {
-    display: flex;
-    align-items: center;
-    justify-content: space-evenly;
-    .logo {
-      width: 80px;
-    }
-    nav a {
-      margin: 0 20px;
-      color: $colorContrast;
-      text-decoration: none;
-      &:hover {
-        text-decoration: underline;
-      }
-    }
-  }
-}
+//   .header-content {
+//     display: flex;
+//     align-items: center;
+//     justify-content: space-evenly;
+//     .logo {
+//       width: 80px;
+//     }
+//     nav a {
+//       margin: 0 20px;
+//       color: $colorContrast;
+//       text-decoration: none;
+//       &:hover {
+//         text-decoration: underline;
+//       }
+//     }
+//   }
+// }
 
 .page-body {
   display: flex;
@@ -287,8 +278,8 @@ $colorContrast: #fff;
   }
 }
 
-.page-footer {
-  border-top: 3px solid $colorPrimary;
-  color: $colorPrimary;
-}
+// .page-footer {
+//   border-top: 3px solid $colorPrimary;
+//   color: $colorPrimary;
+// }
 </style>

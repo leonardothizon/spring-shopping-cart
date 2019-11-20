@@ -10,11 +10,11 @@
     </td>
     <td>R$ {{ $formatPrice(item.price) }}</td>
     <td>
-      <input type="number" v-model="item.quantity" />
+      <input type="number" min="1" v-model="item.quantity" />
     </td>
     <td>R$ {{ $formatPrice(total) }}</td>
     <td>
-      <button class="delete-item">Excluir</button>
+      <button class="delete-item" @click="removeItem">Excluir</button>
     </td>
   </tr>
 </template>
@@ -27,10 +27,11 @@ export default {
       return (this.item) ? this.item.price * this.item.quantity : 0;
     }
   },
-  // methods: {
-    // formatPrice: function(price) {
-    //   return price.toFixed(2).replace('.', ',');
-    // }
-  // }
+  methods: {
+    removeItem: function() {
+      if (!confirm('Deseja excluir o item?')) return;
+      this.$emit('removeItem');
+    }
+  }
 };
 </script>

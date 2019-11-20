@@ -1,6 +1,7 @@
-package br.com.leonardothizon.shoppingcart;
+package br.com.leonardothizon.shoppingcart.entity;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -9,28 +10,38 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
-public class UserEntity {
+public class CustomerEntity {
 
 	public static final PasswordEncoder PASSWORD_ENCODER = new BCryptPasswordEncoder();
+	@Id
+	@GeneratedValue
+	private Long id;
 	private String firstName;
 	private String lastName;
-	@Id
 	private String username;
 	@JsonIgnore
 	private String password;
 	@JsonIgnore
 	private String[] roles;
 
-	public UserEntity() {
+	public CustomerEntity() {
 		super();
 	}
 
-	public UserEntity(String firstName, String lastName, String username, String password, String[] roles) {
+	public CustomerEntity(String firstName, String lastName, String username, String password, String[] roles) {
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.username = username;
 		setPassword(password);
 		this.roles = roles;
+	}
+	
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 	public String getFirstName() {

@@ -1,17 +1,18 @@
 <template>
   <div id="login-page">
     <div class="logo">
-        <img src="/logo.png" />
+      <img src="/logo.png" />
     </div>
     <div class="login-form">
       <div class="form-content">
         <div class="login-form-input">
-          <input type="text" placeholder="USUÁRIO" />
-          <input type="password" placeholder="SENHA" />
+          <p class="error" v-show="error">{{ error }}</p>
+          <input type="text" placeholder="USUÁRIO" v-model="login" />
+          <input type="password" placeholder="SENHA" v-model="password" />
         </div>
         <div class="login-form-actions">
           <a href>Esqueci minha senha</a>
-          <button>Acessar</button>
+          <button @click="authenticate">Acessar</button>
         </div>
       </div>
     </div>
@@ -23,12 +24,29 @@ export default {
   data: function() {
     return {
       login: "",
-      password: ""
+      password: "",
+      error: undefined
     };
   },
   methods: {
     authenticate: function() {
-      window.console.log(this.login, this.password);
+      let plainClientCredentials = this.login + ":" + this.password;
+      let base64ClientCredentials = new String(btoa(plainClientCredentials));
+      let AuthStr = "Basic " + base64ClientCredentials;
+      this.$http
+        .post("http://localhost:9000/api/v1/user/auth", this.login, {
+          headers: { "Content-Type": "text/plain", Authorization: AuthStr }
+        })
+        .then(
+          r => {
+            let user = r.data;
+            this.$store.dispatch("setUser", { user: user, token: AuthStr });
+            this.$router.push("home");
+          },
+          () => {
+            this.error = "Usuário ou senha inválidos";
+          }
+        );
     }
   }
 };

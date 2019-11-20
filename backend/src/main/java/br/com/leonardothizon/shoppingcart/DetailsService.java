@@ -7,16 +7,19 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
+import br.com.leonardothizon.shoppingcart.entity.CustomerEntity;
+import br.com.leonardothizon.shoppingcart.repository.CustomerRepository;
+
 @Component
 public class DetailsService implements UserDetailsService {
 	
 	@Autowired
-	UserRepository users;
+	CustomerRepository customers;
 
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		System.out.println("Looking for user " + username);
-		UserEntity user = users.findByUsername(username);
+		CustomerEntity user = customers.findByUsername(username);
 		if (user == null) {
 			throw new UsernameNotFoundException(username + " was not found");
 		}

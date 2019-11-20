@@ -7,18 +7,13 @@
       <p class="item-price">R$ {{ product.price }}</p>
     </div>
     <div class="add-to-cart">
-      <a @click="addToBag"><img src="shopping-bag-32.png" width="20" /> <span>Adicionar à sacola</span></a>
+      <a @click="$emit('addToBag', product)"><img src="shopping-bag-32.png" width="20" /> <span>Adicionar à sacola</span></a>
     </div>
   </div>
 </template>
 
 <script>
 export default {
-  props: ["product"],
-  methods: {
-    addToBag: function() {
-      this.$store.dispatch('addToCart', this.product)
-    }
-  }
+  props: ["product"]
 };
 </script>
