@@ -74,13 +74,19 @@ export default {
       const AuthStr = this.getToken;
       this.$http
         .post("http://localhost:9000/api/v1/orders", order, {
-          headers: { Authorization: AuthStr }
+          headers: { "Content-Type": "application/json", Authorization: AuthStr }
         })
         .then((r) => {
           let pedidoId = r.data.id;
           alert("Pedido " + pedidoId +" gerado!");
           this.$store.dispatch("cleanShoppingBag");
           this.$router.push('home');
+        }).catch(function (error) {
+          if (error && error.response.data.message) {
+            alert(error.response.data.message);
+          } else {
+            alert('Erro ao inserir pedido');
+          }
         });
     }
   }
